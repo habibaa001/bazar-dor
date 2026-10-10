@@ -1,22 +1,48 @@
 import { Product, Category } from './utils';
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.api-store.workers.dev/api/bazardor';
+const BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL ||
+  'https://openapi.programming-hero.com/api/bazardor';
 
 export async function fetchProducts(category?: string): Promise<Product[]> {
-  const url = category ? `${BASE_URL}/products?category=${category}` : `${BASE_URL}/products`;
-  const res = await fetch(url, { cache: 'no-store' });
-  if (!res.ok) throw new Error('Failed to fetch products');
-  return res.json();
+  try {
+    const url = category
+      ? `${BASE_URL}/products?category=${encodeURIComponent(category)}`
+      : `${BASE_URL}/products`;
+
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('Failed to fetch products');
+
+    const data = await res.json();
+    return data.data || data;
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    return [];
+  }
 }
 
 export async function fetchSingleProduct(slug: string): Promise<Product | null> {
-  const res = await fetch(`${BASE_URL}/products/${slug}`, { cache: 'no-store' });
-  if (!res.ok) return null;
-  return res.json();
+  try {
+    const res = await fetch(`${BASE_URL}/products/${slug}`);
+    if (!res.ok) return null;
+
+    const data = await res.json();
+    return data.data || data;
+  } catch (error) {
+    console.error('Error fetching product:', error);
+    return null;
+  }
 }
 
 export async function fetchCategories(): Promise<Category[]> {
-  const res = await fetch(`${BASE_URL}/categories`, { cache: 'no-store' });
-  if (!res.ok) throw new Error('Failed to fetch categories');
-  return res.json();
+  try {
+    const res = await fetch(`${BASE_URL}/categories`);
+    if (!res.ok) throw new Error('Failed to fetch categories');
+
+    const data = await res.json();
+    return data.data || data;
+  } catch (error) {
+    console.error('Error fetching categories:', error);
+    return [];
+  }
 }

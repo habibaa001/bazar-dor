@@ -37,10 +37,12 @@ export function formatBanglaPrice(price: number): string {
 }
 
 export function getFormattedBanglaDate(): string {
+  if (typeof window === "undefined") {
+    return ""; 
+  }
   return new Date().toLocaleDateString('bn-BD', {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
-    day: 'numeric',
   });
 }
