@@ -28,7 +28,7 @@
     "autoprefixer": "^10.6.1",
     "babel-plugin-react-compiler": "1.0.0",
     "daisyui": "^5.7.47",
-    "eslint": "^9",
+    "eslint": "^8.57.1",
     "eslint-config-next": "^14.2.35",
     "postcss": "^8.5.29",
     "tailwindcss": "^4.3.3",
