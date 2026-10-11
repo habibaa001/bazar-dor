@@ -1,3 +1,4 @@
+import { Suspense, use } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getProductById, Product } from "@/lib/api";
@@ -31,13 +32,22 @@ const dummyMarkets: MarketItem[] = [
   { market: "কারওয়ান বাজার", division: "ঢাকা", min: 146, max: 165, avg: 155.5 },
 ];
 
-export default async function ProductDetailsPage({
+function ProductDetailsContent({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id } = await params;
+  // Suspense-এর ভেতরে params আনর‍্যাপ করা হচ্ছে
+  const resolvedParams = use(params);
+  const id = resolvedParams.id;
 
+  return (
+    <ProductView id={id} />
+  );
+}
+
+// ডেটা লোড এবং ভিউ রেন্ডার
+async function ProductView({ id }: { id: string }) {
   let rawProduct: Product | null = null;
   try {
     rawProduct = await getProductById(id);
@@ -76,8 +86,8 @@ export default async function ProductDetailsPage({
   const categoryPath = product.categorySlug || product.category || "chal";
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-8 space-y-6">
-      {/* Breadcrumb */}
+    <div className="space-y-6">
+      {/* ব্রেডক্রাম্ব */}
       <nav className="text-xs text-gray-500 flex items-center gap-2">
         <Link href="/" className="hover:text-emerald-700">
           হোম
@@ -90,7 +100,7 @@ export default async function ProductDetailsPage({
         <span className="text-gray-800 font-semibold">{product.name}</span>
       </nav>
 
-      {/* Top Product Summary */}
+      {/* ১. টপ প্রোডাক্ট কার্ড */}
       <div className="bg-white border border-gray-100 rounded-3xl p-6 sm:p-8 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
         <div className="flex items-center gap-4">
           <div className="w-16 h-16 rounded-2xl bg-gray-50 flex items-center justify-center text-4xl shadow-inner">
@@ -134,7 +144,7 @@ export default async function ProductDetailsPage({
         </div>
       </div>
 
-      {/* Statistics and Market Table */}
+      {/* ২. দামের সারসংক্ষেপ ও টেবিল */}
       <div className="bg-white border border-gray-100 rounded-3xl p-6 sm:p-8 shadow-xs space-y-8">
         <div>
           <h2 className="text-base font-bold text-gray-800 mb-4">
@@ -223,7 +233,7 @@ export default async function ProductDetailsPage({
         </div>
       </div>
 
-      {/* Back Link */}
+      {/* ব্যাক লিঙ্ক */}
       <div className="pt-2">
         <Link
           href={`/category/${categoryPath}`}
@@ -232,6 +242,29 @@ export default async function ProductDetailsPage({
           <span>{product.emoji || "🏷️"}</span> সব {product.category || "পণ্য"}
         </Link>
       </div>
+    </div>
+  );
+}
+
+export default function ProductDetailsPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  return (
+    <div className="max-w-5xl mx-auto px-4 py-8">
+      {/* params এক্সেস করার পুরো কাজটাই Suspense-এর ভেতরে হবে */}
+      <Suspense
+        fallback={
+          <div className="space-y-6 animate-pulse">
+            <div className="h-4 bg-gray-200 rounded w-1/4" />
+            <div className="h-32 bg-white rounded-3xl border border-gray-100" />
+            <div className="h-64 bg-white rounded-3xl border border-gray-100" />
+          </div>
+        }
+      >
+        <ProductDetailsContent params={params} />
+      </Suspense>
     </div>
   );
 }
