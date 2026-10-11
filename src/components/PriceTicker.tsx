@@ -1,16 +1,18 @@
 import { toBengaliNumber } from "@/lib/utils";
-import { Product } from "@/lib/api";
+import type { Product } from "@/lib/api";
 
 export default function PriceTicker({ products }: { products: Product[] }) {
   if (!products || products.length === 0) return null;
 
+  const tickerItems = [...products, ...products];
+
   return (
     <div
-      className="bg-emerald-950 text-emerald-100 overflow-hidden py-2 whitespace-nowrap text-xs border-y border-emerald-900"
-      suppressHydrationWarning
+      className="w-full overflow-hidden  text-black border-y border-gray-200 py-2"
+      aria-label="বাজার দর ও পণ্যের মূল্য"
     >
-      <div className="animate-marquee flex gap-8" suppressHydrationWarning>
-        {products.map((item, idx) => {
+      <div className="flex w-max animate-marquee hover:pause-marquee">
+        {tickerItems.map((item, idx) => {
           const changeVal = Number(item.change) || 0;
           const isUp = changeVal > 0;
           const isFlat = changeVal === 0;
@@ -18,29 +20,32 @@ export default function PriceTicker({ products }: { products: Product[] }) {
           return (
             <span
               key={`${item.id}-${idx}`}
-              className="inline-flex items-center gap-1.5 font-medium"
-              suppressHydrationWarning
+              className="inline-flex shrink-0 items-center gap-2 px-5 text-xs font-medium"
             >
               <span className="text-sm">{item.emoji || "🛍️"}</span>
               <span>{item.name}</span>
-              <span className="text-gray-300">
+
+              <span className="text-gray-500">
                 {toBengaliNumber(item.price)} টাকা/{item.unit || "কেজি"}
               </span>
+
               <span
                 className={`font-semibold ${
                   isFlat
-                    ? "text-gray-400"
+                    ? "text-gray-500"
                     : isUp
-                    ? "text-rose-400"
-                    : "text-emerald-400"
+                    ? "text-red-400"
+                    : "text-green-600"
                 }`}
               >
                 {isFlat
-                  ? "—০.০%"
+                  ? "— ০.০%"
                   : isUp
                   ? `▲ ${toBengaliNumber(changeVal)}%`
                   : `▼ ${toBengaliNumber(Math.abs(changeVal))}%`}
               </span>
+
+              <span className="ml-3 text-gray-300">|</span>
             </span>
           );
         })}

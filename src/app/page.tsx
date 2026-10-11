@@ -1,9 +1,8 @@
 import Image from "next/image";
 import { getProducts, Product } from "@/lib/api";
-import PriceTicker from "@/components/PriceTicker";
 import ProductCard from "@/components/ProductCard";
 import AllProductsSection from "@/components/AllProductsSection";
-
+import DateDisplay from "@/components/DateDisplay";
 export default async function HomePage() {
   let products: Product[] = [];
 
@@ -14,7 +13,6 @@ export default async function HomePage() {
     console.error("Failed to load products:", error);
   }
 
-  
   const risers = [...products]
     .sort((a, b) => (Number(b.change) || 0) - (Number(a.change) || 0))
     .slice(0, 6);
@@ -25,13 +23,11 @@ export default async function HomePage() {
 
   return (
     <main className="pb-16" suppressHydrationWarning>
-      <PriceTicker products={products} />
-
       <section className="bg-gradient-to-b from-emerald-50/70 to-white py-12 md:py-16 border-b border-gray-100">
         <div className="max-w-6xl mx-auto px-4 flex flex-col-reverse md:flex-row items-center justify-between gap-10">
           <div className="max-w-xl text-center md:text-left">
             <span className="inline-block bg-emerald-100 text-emerald-800 text-xs px-3 py-1 rounded-full font-semibold mb-4 tracking-wide">
-              দৈনন্দিন বাজার দর পর্যবেক্ষণ
+              <DateDisplay />
             </span>
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 leading-tight mb-4">
               আজকের বাজারের দাম এক নজরে 

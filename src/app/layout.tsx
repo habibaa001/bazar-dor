@@ -3,6 +3,8 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import PriceTicker from "@/components/PriceTicker";
+import { getProducts, type Product } from "@/lib/api";
 import { Toaster } from "react-hot-toast";
 import { Suspense } from "react";
 
@@ -13,19 +15,36 @@ export const metadata: Metadata = {
   description: "নিত্যপ্রয়োজনীয় পণ্যের বাজার মূল্য পর্যবেক্ষণ ও তুলনা করুন",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+let products: Product[] = [];
+  try {
+    products = await getProducts();
+  } catch (error) {
+    console.error("Failed to load ticker products:", error);
+  }
+
   return (
     <html lang="bn" data-theme="light" suppressHydrationWarning>
-      <body className={`${inter.className} min-h-screen flex flex-col bg-slate-50/50`} suppressHydrationWarning>
+      <body
+        className={`${inter.className} min-h-screen flex flex-col bg-slate-50/50`}
+        suppressHydrationWarning
+      >
         <Toaster position="top-right" />
+
         <Suspense fallback={<div className="h-16 bg-white border-b" />}>
           <Navbar />
         </Suspense>
+
+        <div className="sticky top-[114px] z-40">
+          <PriceTicker products={products} />
+        </div>
+
         <div className="flex-1">{children}</div>
+
         <Footer />
       </body>
     </html>

@@ -1,20 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "@/lib/auth-client";
-import toast from "react-hot-toast";
-import DateDisplay from "./DateDisplay";
+import { ShoppingCart } from "lucide-react";
 
 const categories = [
-  { name: "সব পণ্য", slug: "/" },
-  { name: "চাল", slug: "/categories/chal" },
-  { name: "ডাল", slug: "/categories/dal" },
-  { name: "তেল", slug: "/categories/oil" },
-  { name: "সবজি", slug: "/categories/vegetables" },
-  { name: "মাছ", slug: "/categories/fish" },
-  { name: "মাংস", slug: "/categories/meat" },
+  { name: "চাল", slug: "chal", emoji: "🍚" },
+  { name: "ডাল", slug: "dal", emoji: "🫘" },
+  { name: "তেল", slug: "oil", emoji: "🛢️" },
+  { name: "সবজি", slug: "vegetables", emoji: "🥬" },
+  { name: "মাছ", slug: "fish", emoji: "🐟" },
+  { name: "মাংস", slug: "meat", emoji: "🍗" },
 ];
 
 export default function Navbar() {
@@ -23,56 +20,50 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     await signOut();
-    toast.success("সফলভাবে লগআউট হয়েছে!");
+    window.location.href = "/";
   };
 
   return (
-    <header className="border-b bg-white sticky top-0 z-50 shadow-sm" suppressHydrationWarning>
-      <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-3">
-          <div className="w-10 h-10 relative rounded-2xl bg-emerald-600 flex items-center justify-center">
-            <img
-              src="./assets/logo-icon.png"
-              alt="বাজার দর"
-              sizes="100px"
-              className="object-contain"
-            />
+    <header className="bg-white border-b border-gray-200 sticky top-0 z-40">
+      <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+        <Link href="/" className="flex items-center gap-2.5">
+          <div className="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center text-white shadow-xs">
+            <img src="./assets/logo-icon.png" alt="Logo" />
           </div>
           <div>
-            <div className="text-xl font-bold text-emerald-800 tracking-tight flex items-center gap-1">
+            <span className="text-xl font-extrabold text-gray-900 tracking-tight">
               বাজার দর
-            </div>
-            <DateDisplay />
+            </span>
+            <span className="block text-[11px] text-gray-500 font-medium -mt-0.5">
+              রবিবার, ১১ অক্টোবর, ২০২৬
+            </span>
           </div>
         </Link>
 
         <div className="flex items-center gap-3">
           {session ? (
-            <div className="flex items-center gap-2">
-              <Link
-                href="/profile"
-                className="btn btn-sm btn-ghost text-emerald-800 font-medium"
-              >
-                {session.user.name || "প্রোফাইল"}
-              </Link>
+            <div className="flex items-center gap-3">
+              <span className="text-xs font-semibold text-gray-700 bg-gray-100 px-3 py-1.5 rounded-lg">
+                {session.user?.name || "ইউজার"}
+              </span>
               <button
                 onClick={handleLogout}
-                className="btn btn-sm btn-outline btn-error"
+                className="btn btn-sm bg-rose-50 text-rose-600 hover:bg-rose-100 border-none font-semibold text-xs rounded-lg"
               >
                 সাইন আউট
               </button>
             </div>
           ) : (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2.5">
               <Link
                 href="/signin"
-                className="btn btn-sm btn-outline border-emerald-600 text-emerald-700 hover:bg-emerald-50 hover:border-emerald-700"
+                className="px-4 py-1.5 text-xs sm:text-sm font-semibold text-emerald-700 hover:bg-emerald-50 border border-emerald-600 rounded-lg transition-colors"
               >
                 সাইন ইন
               </Link>
               <Link
                 href="/signup"
-                className="btn btn-sm bg-emerald-600 hover:bg-emerald-700 text-white border-none"
+                className="px-4 py-1.5 text-xs sm:text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow-xs transition-colors"
               >
                 সাইন আপ
               </Link>
@@ -81,26 +72,28 @@ export default function Navbar() {
         </div>
       </div>
 
-      <nav className="border-t bg-gray-50/80 overflow-x-auto scrollbar-none">
-        <div className="max-w-6xl mx-auto px-4 flex gap-6 text-sm py-2">
+      <div className="border-t border-gray-100 bg-white">
+        <div className="max-w-6xl mx-auto px-4 overflow-x-auto no-scrollbar py-2.5 flex items-center justify-center gap-5 sm:gap-7">
           {categories.map((cat) => {
-            const isActive = pathname === cat.slug;
+            const isActive = pathname === `/categories/${cat.slug}`;
+
             return (
               <Link
                 key={cat.slug}
-                href={cat.slug}
-                className={`whitespace-nowrap transition-all duration-150 ${
+                href={`/categories/${cat.slug}`}
+                className={`flex items-center gap-1.5 text-xs sm:text-sm font-semibold whitespace-nowrap transition-colors duration-150 ${
                   isActive
-                    ? "text-emerald-700 font-bold border-b-2 border-emerald-700 pb-1"
-                    : "text-gray-600 hover:text-emerald-700"
+                    ? "text-emerald-700"
+                    : "text-gray-700 hover:text-emerald-600"
                 }`}
               >
-                {cat.name}
+                <span className="text-sm">{cat.emoji}</span>
+                <span>{cat.name}</span>
               </Link>
             );
           })}
         </div>
-      </nav>
+      </div>
     </header>
   );
 }
