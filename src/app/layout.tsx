@@ -33,7 +33,7 @@ let products: Product[] = [];
         className={`${inter.className} min-h-screen flex flex-col bg-slate-50/50`}
         suppressHydrationWarning
       >
-        <Toaster position="top-right" />
+        <Toaster position="top-right" reverseOrder={false} />
 
         <Suspense fallback={<div className="h-16 bg-white border-b" />}>
           <Navbar />

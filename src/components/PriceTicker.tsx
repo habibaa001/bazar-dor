@@ -34,7 +34,7 @@ export default function PriceTicker({ products }: { products: Product[] }) {
                   isFlat
                     ? "text-gray-500"
                     : isUp
-                    ? "text-red-400"
+                    ? "text-red-700"
                     : "text-green-600"
                 }`}
               >
