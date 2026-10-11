@@ -1,78 +1,106 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useSession, signOut } from '../lib/auth-client';
-import { getFormattedBanglaDate } from '../lib/utils';
-import toast from 'react-hot-toast';
+import Link from "next/link";
+import Image from "next/image";
+import { usePathname } from "next/navigation";
+import { useSession, signOut } from "@/lib/auth-client";
+import toast from "react-hot-toast";
+import DateDisplay from "./DateDisplay";
 
 const categories = [
-  { slug: '', label: 'সব' },
-  { slug: 'chal', label: 'চাল' },
-  { slug: 'daal', label: 'ডাল' },
-  { slug: 'tel', label: 'তেল' },
-  { slug: 'shobji', label: 'সবজি' },
-  { slug: 'mach', label: 'মাছ' },
-  { slug: 'mangsho', label: 'মাংস' },
+  { name: "সব পণ্য", slug: "/" },
+  { name: "চাল", slug: "/categories/chal" },
+  { name: "ডাল", slug: "/categories/dal" },
+  { name: "তেল", slug: "/categories/oil" },
+  { name: "সবজি", slug: "/categories/vegetables" },
+  { name: "মাছ", slug: "/categories/fish" },
+  { name: "মাংস", slug: "/categories/meat" },
 ];
 
 export default function Navbar() {
   const pathname = usePathname();
   const { data: session } = useSession();
 
-  const handleSignOut = async () => {
+  const handleLogout = async () => {
     await signOut();
-    toast.success('সফলভাবে সাইন আউট করা হয়েছে');
+    toast.success("সফলভাবে লগআউট হয়েছে!");
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-base-100 shadow-md">
-      <div className="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
-        <Link href="/" className="flex flex-col">
-          <span className="text-2xl font-bold text-primary flex items-center gap-1">
-            <img src="./assets/logo-icon.png" alt="Logo" className="w-8 h-8" /> বাজার দর
-          </span>
-          <span className="text-xs text-base-content/70">{getFormattedBanglaDate()}</span>
+    <header className="border-b bg-white sticky top-0 z-50 shadow-sm" suppressHydrationWarning>
+      <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+        <Link href="/" className="flex items-center gap-3">
+          <div className="w-10 h-10 relative rounded-2xl bg-emerald-600 flex items-center justify-center">
+            <img
+              src="./assets/logo-icon.png"
+              alt="বাজার দর"
+              sizes="100px"
+              className="object-contain"
+            />
+          </div>
+          <div>
+            <div className="text-xl font-bold text-emerald-800 tracking-tight flex items-center gap-1">
+              বাজার দর
+            </div>
+            <DateDisplay />
+          </div>
         </Link>
 
         <div className="flex items-center gap-3">
           {session ? (
-            <div className="flex items-center gap-3">
-              <Link href="/profile" className="w-10 h-10 rounded-full bg-primary text-primary-content flex items-center justify-center font-bold">
-                {session.user.name?.[0] || 'U'}
+            <div className="flex items-center gap-2">
+              <Link
+                href="/profile"
+                className="btn btn-sm btn-ghost text-emerald-800 font-medium"
+              >
+                {session.user.name || "প্রোফাইল"}
               </Link>
-              <button onClick={handleSignOut} className="btn btn-outline btn-sm">
+              <button
+                onClick={handleLogout}
+                className="btn btn-sm btn-outline btn-error"
+              >
                 সাইন আউট
               </button>
             </div>
           ) : (
-            <div className="flex gap-2">
-              <Link href="/signin" className="btn btn-outline btn-sm sm:btn-md">সাইন ইন</Link>
-              <Link href="/signup" className="btn btn-primary btn-sm sm:btn-md">সাইন আপ</Link>
+            <div className="flex items-center gap-2">
+              <Link
+                href="/signin"
+                className="btn btn-sm btn-outline border-emerald-600 text-emerald-700 hover:bg-emerald-50 hover:border-emerald-700"
+              >
+                সাইন ইন
+              </Link>
+              <Link
+                href="/signup"
+                className="btn btn-sm bg-emerald-600 hover:bg-emerald-700 text-white border-none"
+              >
+                সাইন আপ
+              </Link>
             </div>
           )}
         </div>
       </div>
 
-      <div className="bg-base-200 border-t border-b border-base-300">
-        <div className="max-w-6xl mx-auto px-4 overflow-x-auto flex gap-4 py-2 text-sm font-medium">
+      <nav className="border-t bg-gray-50/80 overflow-x-auto scrollbar-none">
+        <div className="max-w-6xl mx-auto px-4 flex gap-6 text-sm py-2">
           {categories.map((cat) => {
-            const href = cat.slug ? `/categories/${cat.slug}` : '/';
-            const isActive = pathname === href;
+            const isActive = pathname === cat.slug;
             return (
               <Link
                 key={cat.slug}
-                href={href}
-                className={`whitespace-nowrap px-3 py-1 rounded-full transition-colors ${
-                  isActive ? 'bg-primary text-primary-content font-bold' : 'hover:bg-base-300'
+                href={cat.slug}
+                className={`whitespace-nowrap transition-all duration-150 ${
+                  isActive
+                    ? "text-emerald-700 font-bold border-b-2 border-emerald-700 pb-1"
+                    : "text-gray-600 hover:text-emerald-700"
                 }`}
               >
-                {cat.label}
+                {cat.name}
               </Link>
             );
           })}
         </div>
-      </div>
+      </nav>
     </header>
   );
 }

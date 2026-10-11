@@ -1,39 +1,64 @@
-'use client';
+import Link from "next/link";
+import { toBengaliNumber } from "@/lib/utils";
+import { Product } from "@/lib/api";
 
-import Link from 'next/link';
-import { Product, toBanglaNumeral, formatBanglaPrice } from '../lib/utils';
+interface ProductCardProps {
+  product: Product;
+}
 
-export default function ProductCard({ product }: { product: Product }) {
-  const isUp = product.priceChangePercent > 0;
-  const isDown = product.priceChangePercent < 0;
-  const productSlug = product.slug || product.id;
+export default function ProductCard({ product }: ProductCardProps) {
+  if (!product) return null;
+
+  const changeVal = typeof product.change === "number" ? product.change : 0;
+  const priceVal = typeof product.price === "number" ? product.price : 0;
+
+  const isUp = changeVal > 0;
+  const isFlat = changeVal === 0;
 
   return (
     <Link
-      href={`/product/${productSlug}`}
-      className="card bg-base-100 shadow-md hover:shadow-xl transition-all border border-base-200 cursor-pointer"
+      href={`/product/${product.id}`}
+      className="card bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200 rounded-2xl p-4 flex flex-col justify-between group hover:-translate-y-0.5"
+      suppressHydrationWarning
     >
-      <div className="card-body p-4 sm:p-5">
-        <div className="text-4xl mb-2">{product.emoji}</div>
-        <h3 className="card-title text-lg font-bold text-base-content">{product.name}</h3>
-        <p className="text-xs text-base-content/60">{product.unit}</p>
-
-        <div className="mt-3 pt-3 border-t border-base-200 flex justify-between items-center">
-          <div>
-            <span className="text-xs text-base-content/60 block">আজকের দাম</span>
-            <span className="font-bold text-primary text-base sm:text-lg">
-              {formatBanglaPrice(product.currentPrice)}
-            </span>
-          </div>
-
-          <div
-            className={`badge gap-1 text-xs font-semibold p-2 ${
-              isUp ? 'badge-success text-white' : isDown ? 'badge-error text-white' : 'badge-ghost'
-            }`}
-          >
-            {isUp ? '▲' : isDown ? '▼' : '—'} {toBanglaNumeral(Math.abs(product.priceChangePercent).toFixed(1))}%
-          </div>
+      <div suppressHydrationWarning>
+        <div
+          className="text-4xl bg-gray-50 border border-gray-100/60 w-16 h-16 rounded-xl flex items-center justify-center mb-3 group-hover:scale-105 transition-transform"
+          suppressHydrationWarning
+        >
+          {product.emoji || "🥬"}
         </div>
+        <h3 className="font-semibold text-gray-800 text-base leading-snug line-clamp-1 mb-1">
+          {product.name}
+        </h3>
+        <p className="text-xs text-gray-400 mb-4">{product.unit || "প্রতি কেজি"}</p>
+      </div>
+
+      <div
+        className="pt-3 border-t border-gray-100 flex items-center justify-between"
+        suppressHydrationWarning
+      >
+        <div suppressHydrationWarning>
+          <span className="text-[10px] text-gray-400 block font-medium">আজকের দাম</span>
+          <span className="text-lg font-bold text-gray-900 tracking-tight">
+            {toBengaliNumber(priceVal)} টাকা
+          </span>
+        </div>
+        <span
+          className={`text-xs px-2.5 py-1 rounded-full font-semibold border ${
+            isFlat
+              ? "bg-gray-100 text-gray-600 border-gray-200"
+              : isUp
+              ? "bg-rose-50 text-rose-600 border-rose-200"
+              : "bg-emerald-50 text-emerald-600 border-emerald-200"
+          }`}
+        >
+          {isFlat
+            ? "— ০.০%"
+            : isUp
+            ? `▲ ${toBengaliNumber(changeVal)}%`
+            : `▼ ${toBengaliNumber(Math.abs(changeVal))}%`}
+        </span>
       </div>
     </Link>
   );
