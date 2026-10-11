@@ -151,7 +151,7 @@ export default function SignUpPage() {
             <div className="w-full border-t border-gray-200"></div>
           </div>
           <span className="relative bg-white px-3 text-[11px] text-gray-500 font-medium">
-            অথবা
+            OR
           </span>
         </div>
 

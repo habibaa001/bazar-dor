@@ -29,11 +29,11 @@ export default function Navbar() {
   const handleLogout = async () => {
     try {
       await signOut();
-      toast.success("সফলভাবে সাইন আউট হয়েছে!");
+      toast.success(" Successfully signed out!");
       router.push("/");
       router.refresh();
     } catch {
-      toast.error("সাইন আউট করতে সমস্যা হয়েছে");
+      toast.error("Failed to sign out");
     }
   };
 
@@ -68,7 +68,7 @@ export default function Navbar() {
                 href="/profile"
                 className="max-w-28 truncate rounded-lg bg-gray-100 px-3 py-2 text-xs font-semibold text-gray-700 sm:max-w-none sm:text-sm"
               >
-                {session.user.name || "প্রোফাইল"}
+                {session.user.name || "Profile"}
               </Link>
 
               <button
